@@ -87,40 +87,29 @@ func (m *optionsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		size = msg
 	case tea.KeyMsg:
-		msgType := msg.Type
-	CHECK_KEY:
-		switch msgType {
-		case tea.KeyEnter:
+		switch msg.String() {
+		case "enter":
 			return pages[files].Update(size)
-		case tea.KeyCtrlC, tea.KeyEsc:
+		case "ctrl+c", "esc":
 			return m, tea.Quit
-		case tea.KeySpace:
+		case " ":
 			_, ok := m.selected[m.cursor]
 			if ok {
 				delete(m.selected, m.cursor)
 			} else {
 				m.selected[m.cursor] = struct{}{}
 			}
-		case tea.KeyUp:
+		case "up", "k":
 			if m.cursor > 0 {
 				m.cursor--
 			} else {
 				m.cursor = len(m.options) - 1
 			}
-		case tea.KeyDown:
+		case "down", "j":
 			if m.cursor == len(m.options)-1 {
 				m.cursor = 0
 			} else {
 				m.cursor++
-			}
-		case tea.KeyRunes:
-			switch msg.String() {
-			case "k":
-				msgType = tea.KeyUp
-				goto CHECK_KEY
-			case "j":
-				msgType = tea.KeyDown
-				goto CHECK_KEY
 			}
 		}
 	}
