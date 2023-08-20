@@ -62,10 +62,10 @@ type option struct {
 }
 
 type optionsModel struct {
-	options  []option
-	help     help.Model
-	cursor   int
 	selected map[int]struct{}
+	help     help.Model
+	options  []option
+	cursor   int
 }
 
 func newOptionsModel(exts []option) *optionsModel {
@@ -87,7 +87,9 @@ func (m *optionsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		size = msg
 	case tea.KeyMsg:
-		switch msg.Type {
+		msgType := msg.Type
+	CHECK_KEY:
+		switch msgType {
 		case tea.KeyEnter:
 			return pages[files].Update(size)
 		case tea.KeyCtrlC, tea.KeyEsc:
@@ -111,6 +113,15 @@ func (m *optionsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursor++
 			}
+		case tea.KeyRunes:
+			switch msg.String() {
+			case "k":
+				msgType = tea.KeyUp
+				goto CHECK_KEY
+			case "j":
+				msgType = tea.KeyDown
+				goto CHECK_KEY
+			}
 		}
 	}
 	return m, nil
@@ -129,12 +140,12 @@ func (*optionsModel) ShortHelp() []key.Binding {
 			key.WithHelp("⎵", "toggle"),
 		),
 		key.NewBinding(
-			key.WithKeys("up"),
-			key.WithHelp("↑/up", "up"),
+			key.WithKeys("up", "k"),
+			key.WithHelp("↑/up/k", "up"),
 		),
 		key.NewBinding(
-			key.WithKeys("down"),
-			key.WithHelp("↓/down", "down"),
+			key.WithKeys("down", "j"),
+			key.WithHelp("↓/down/j", "down"),
 		),
 		key.NewBinding(
 			key.WithKeys("enter"),
@@ -174,9 +185,9 @@ type file string
 
 type fileDelegate struct{}
 
-func (d fileDelegate) Height() int                               { return 1 }
-func (d fileDelegate) Spacing() int                              { return 0 }
-func (d fileDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
+func (d fileDelegate) Height() int                             { return 1 }
+func (d fileDelegate) Spacing() int                            { return 0 }
+func (d fileDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
 func (d fileDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
 	i, ok := listItem.(file)
 	if !ok {

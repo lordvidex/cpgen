@@ -2,14 +2,17 @@ package main
 
 import (
 	"bufio"
+	{{ if .Pq }}"container/heap"{{ end }}
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
-	{{ if .Pq }}"container/heap"{{ end }}
 )
 
-var in = bufio.NewReader(os.Stdin)
+var (
+	in  = bufio.NewReader(os.Stdin)
+	out = bufio.NewWriter(os.Stdout)
+)
 
 func main() {
 {{ if .Cf }}
@@ -20,6 +23,7 @@ func main() {
 {{ else }}
 	solve()
 {{ end }}
+	out.Flush()
 }
 
 func solve() {
@@ -51,6 +55,18 @@ func max(i, j int) int {
 		return i
 	}
 	return j
+}
+
+func abs(i int) int {
+	if i < 0 {
+		return -1 * i
+	}
+	return i
+}
+
+func atoi(a string) int {
+	i, _ := strconv.Atoi(a)
+	return i
 }
 
 func readInt(in *bufio.Reader) int {
@@ -85,9 +101,18 @@ func readArrInt64(in *bufio.Reader) []int64 {
 	return arr
 }
 
-func write(arg ...interface{})            { fmt.Print(arg...) }
-func writeLine(arg ...interface{})        { fmt.Println(arg...) }
-func writeF(f string, arg ...interface{}) { fmt.Printf(f, arg...) }
+func write(arg ...interface{})            { fmt.Fprint(out, arg...) }
+func writeLine(arg ...interface{})        { fmt.Fprintln(out, arg...) }
+func writeF(f string, arg ...interface{}) { fmt.Fprintf(out, f, arg...) }
+func writeInts(arr []int) {
+	for i := 0; i < len(arr); i++ {
+		if i == len(arr)-1 {
+			fmt.Fprintf(out, "%d\n", arr[i])
+		} else {
+			fmt.Fprintf(out, "%d ", arr[i])
+		}
+	}
+}
 
 {{ if .Pq }}
 type PQ []int

@@ -26,6 +26,7 @@ func init() {
 	}
 }
 
+// Config contains the parameters used to generate the files to be used
 type Config struct {
 	Pq bool // include priority queue struct and methods
 	Uf bool // include unionfind struct and methods
