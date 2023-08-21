@@ -10,3 +10,5 @@ install-cli:
 install-tui:
 	go build -o ./bin/cpgen-tui ./cmd/tui/tui.go && \
 	mv ./bin/cpgen-tui $(GOBIN)/cpgen
+bench:
+	go test -bench=. -benchmem ./...
