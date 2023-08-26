@@ -10,7 +10,7 @@ A terminal based application that generates competitive programming solution fil
 
 ## Installation
 ### Prerequisites
-- [Go](https://go.dev/)
+- [>= Go 1.18](https://go.dev/)
 
 Download the source code and run the following `make` commands to install the program in the `GOBIN` directory.
 ```bash
@@ -33,6 +33,9 @@ make install-tui # terminal UI version
 ### Roadmap
 - [ ] Add support for other competitive programming websites  
 - [ ] Add more templates
+
+---
+Don't forget to star 🌟 the repository if you found this useful. Thanks ❤️
 
 ## Screenshots
 ### CLI
