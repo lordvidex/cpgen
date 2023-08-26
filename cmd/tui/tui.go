@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/lordvidex/cpgen"
+	"github.com/lordvidex/cpgen/pkg/cond"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -32,6 +33,7 @@ const (
 const (
 	padding  = 2
 	maxWidth = 80
+	eps      = 0.000001
 )
 
 var (
@@ -331,11 +333,12 @@ func newFilesModel(pages []string) *filesModel {
 
 // loadingModel is responsible for showing the progress of file generation to the user in the terminal
 type loadingModel struct {
-	progress progress.Model
-	spinner  spinner.Model
-	update   float64
-	quitting bool
-	once     sync.Once
+	progress       progress.Model
+	spinner        spinner.Model
+	update         float64
+	finishedUpdate bool
+	quitting       bool
+	once           sync.Once
 }
 
 func (m *loadingModel) Init() tea.Cmd {
@@ -360,10 +363,15 @@ func (m *loadingModel) Bg() {
 		Uf: contains(1),
 		Sv: contains(2),
 		Cf: contains(3),
+		FileIO: cond.If(contains(4),
+			&cpgen.IO{Input: "input.txt", Output: "output.txt"},
+			nil,
+		),
 	}, "solution")
 	for x := range ch {
 		m.update = x
 	}
+	m.finishedUpdate = true
 }
 
 func (m *loadingModel) View() string {
@@ -380,7 +388,7 @@ const (
 )
 
 func (m *loadingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmds []tea.Cmd = []tea.Cmd{m.tickCmd(), m.spinner.Tick}
+	var cmds = []tea.Cmd{m.tickCmd(), m.spinner.Tick}
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.progress.Width = msg.Width - padding*2 - 4
@@ -400,7 +408,7 @@ func (m *loadingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	case tickMsg:
-		if msg >= 1.0 {
+		if m.finishedUpdate {
 			if !m.quitting {
 				m.quitting = true
 				// wait for 1 sec to close
@@ -436,7 +444,7 @@ func newLoadingModel() *loadingModel {
 }
 
 func (m *loadingModel) tickCmd() tea.Cmd {
-	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
+	return tea.Tick(time.Millisecond*200, func(t time.Time) tea.Msg {
 		return tickMsg(m.update)
 	})
 }
@@ -452,6 +460,7 @@ func main() {
 		{message: "Add union find template"},
 		{message: "Add sieve of erathostenes template"},
 		{message: "Add testcase loop i.e. `t` testcases"},
+		{message: "Use files 'input.txt' and 'output.txt' instead of console"},
 	}
 	defaultPages := []string{"a", "b", "c", "d", "e", "f"}
 	pages = []tea.Model{

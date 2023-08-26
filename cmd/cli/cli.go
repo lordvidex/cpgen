@@ -14,6 +14,7 @@ var (
 	only                string
 	sieveOfEratosthenes bool
 	cf                  bool
+	fileIO              bool
 )
 
 func init() {
@@ -22,7 +23,13 @@ func init() {
 	flag.BoolVar(&unionFind, "uf", false, "Add code for union find")
 	flag.BoolVar(&sieveOfEratosthenes, "sieve", false, "Add code for sieve of eratosthenes")
 	flag.UintVar(&count, "c", 0, "number of solution files")
-	flag.StringVar(&only, "only", "", "generate solution files for files (filenames should be comma separeted) e.g. 'a,b,c'")
+	flag.StringVar(
+		&only,
+		"only",
+		"",
+		"generate solution files for files (filenames should be comma separeted) e.g. 'a,b,c'",
+	)
+	flag.BoolVar(&fileIO, "file", false, "read input from 'input.txt' and read output to 'output.txt'")
 }
 
 func main() {
@@ -36,6 +43,12 @@ func main() {
 		Sv: sieveOfEratosthenes,
 		Cf: cf,
 	}
+	if fileIO {
+		config.FileIO = &cpgen.IO{
+			Input:  "input.txt",
+			Output: "output.txt",
+		}
+	}
 	files := make([]string, 0)
 	if count > 0 {
 		for i := uint(0); i < count; i++ {
@@ -47,6 +60,7 @@ func main() {
 		files = append(files, strings.Split(only, ",")...)
 	}
 	c := cpgen.Generate(files, config, "")
+	// wait for the task to finish
 	for range c {
-	} // wait for the task to finish
+	}
 }

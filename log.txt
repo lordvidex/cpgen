@@ -1,7 +1,0 @@
-2023/03/27 16:47:42 written to file solution/a/a.go
-2023/03/27 16:47:42 written to file solution/b/b.go
-2023/03/27 16:47:42 written to file solution/c/c.go
-2023/03/27 16:47:42 written to file solution/d/d.go
-2023/03/27 16:47:42 written to file solution/e/e.go
-2023/03/27 16:47:42 written to file solution/f/f.go
-2023/03/27 16:47:42 written to file solution/newfile/newfile.go

@@ -2,7 +2,8 @@ package main
 
 import (
 	"bufio"
-	{{ if .Pq }}"container/heap"{{ end }}
+  {{ if .FileIO }}"log"{{- end }}
+	{{ if .Pq }}"container/heap"{{- end }}
 	"fmt"
 	"os"
 	"strconv"
@@ -15,7 +16,20 @@ var (
 )
 
 func main() {
-{{ if .Cf }}
+{{ if .FileIO -}}
+  inputFile, err := os.Open("{{- .FileIO.Input -}}")
+  if err != nil {
+    log.Fatal(err)
+  }
+  in = bufio.NewReader(inputFile)
+
+  outputFile, err := os.OpenFile("{{- .FileIO.Output -}}", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+  if err != nil {
+    log.Fatal(err)
+  }
+  out = bufio.NewWriter(outputFile)
+{{- end }}
+{{- if .Cf }}
 	t := readInt(in)
 	for i := 0; i < t; i++ {
 		solve()
